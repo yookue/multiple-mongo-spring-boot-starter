@@ -1,0 +1,15 @@
+# Multiple Mongo for Spring Boot Starter
+# Copyright (c) 2020 Yookue Ltd. All rights reserved.
+# https://yookue.com
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration =\
+    com.yookue.springstarter.multiplemongodb.config.MongoReactivePreConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.PrimaryMongoAutoConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.PrimaryMongoReactiveConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.PrimaryMongoRepositoryConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.SecondaryMongoAutoConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.SecondaryMongoReactiveConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.SecondaryMongoRepositoryConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.TertiaryMongoAutoConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.TertiaryMongoReactiveConfiguration,\
+    com.yookue.springstarter.multiplemongodb.config.TertiaryMongoRepositoryConfiguration

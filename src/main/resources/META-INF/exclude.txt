@@ -1,0 +1,12 @@
+Multiple Mongo for Spring Boot Starter
+Copyright (c) 2020 Yookue Ltd. All rights reserved.
+https://yookue.com
+
+# spring.autoconfigure.exclude ('+' means better, '-' means must)
++ org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+- org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration
+- org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration
+- org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration
+- org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration
+- org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration
+- org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration
