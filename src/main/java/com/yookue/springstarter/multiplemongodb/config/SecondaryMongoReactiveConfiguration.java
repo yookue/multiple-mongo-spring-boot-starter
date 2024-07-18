@@ -18,7 +18,7 @@ package com.yookue.springstarter.multiplemongodb.config;
 
 
 import java.util.Collections;
-import javax.annotation.Nonnull;
+import jakarta.annotation.Nonnull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -27,11 +27,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveConfigurationUtils;
+import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataConfigurationUtils;
 import org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoClientSettingsBuilderCustomizer;
+import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
-import org.springframework.boot.autoconfigure.mongo.MongoPropertiesClientSettingsBuilderCustomizer;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.ReactiveMongoClientFactory;
 import org.springframework.context.annotation.Bean;
@@ -58,44 +59,51 @@ import reactor.core.publisher.Flux;
 @AutoConfigureAfter(value = SecondaryMongoAutoConfiguration.class)
 @AutoConfigureBefore(value = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class})
 public class SecondaryMongoReactiveConfiguration {
-    public static final String MONGO_CLIENT_FACTORY = "secondaryReactiveMongoClientFactory";    // $NON-NLS-1$
+    public static final String CLIENT_FACTORY = "secondaryReactiveMongoClientFactory";    // $NON-NLS-1$
     public static final String MONGO_CLIENT = "secondaryReactiveMongoClient";    // $NON-NLS-1$
-    public static final String MONGO_DATABASE_FACTORY = "secondaryReactiveMongoDatabaseFactory";    // $NON-NLS-1$
+    public static final String DATABASE_FACTORY = "secondaryReactiveMongoDatabaseFactory";    // $NON-NLS-1$
     public static final String MONGO_TEMPLATE = "secondaryReactiveMongoTemplate";    // $NON-NLS-1$
     public static final String GRID_FS_TEMPLATE = "secondaryReactiveMongoGridFsTemplate";    // $NON-NLS-1$
 
-    @Bean(name = MONGO_CLIENT_FACTORY)
-    @ConditionalOnBean(name = SecondaryMongoAutoConfiguration.MONGO_PROPERTIES_CUSTOMIZER)
-    @ConditionalOnMissingBean(name = MONGO_CLIENT_FACTORY)
-    public ReactiveMongoClientFactory mongoClientFactory(@Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_PROPERTIES_CUSTOMIZER) @Nonnull MongoPropertiesClientSettingsBuilderCustomizer customizer) {
+    @Bean(name = CLIENT_FACTORY)
+    @ConditionalOnBean(name = SecondaryMongoAutoConfiguration.SETTINGS_BUILDER_CUSTOMIZER)
+    @ConditionalOnMissingBean(name = CLIENT_FACTORY)
+    public ReactiveMongoClientFactory mongoClientFactory(@Qualifier(value = SecondaryMongoAutoConfiguration.SETTINGS_BUILDER_CUSTOMIZER) @Nonnull MongoClientSettingsBuilderCustomizer customizer) {
         return new ReactiveMongoClientFactory(Collections.singletonList(customizer));
     }
 
     @Bean(name = MONGO_CLIENT, destroyMethod = "close")
-    @ConditionalOnBean(name = {MONGO_CLIENT_FACTORY, SecondaryMongoAutoConfiguration.MONGO_CLIENT_SETTINGS})
+    @ConditionalOnBean(name = {CLIENT_FACTORY, SecondaryMongoAutoConfiguration.CLIENT_SETTINGS})
     @ConditionalOnMissingBean(name = MONGO_CLIENT)
-    public MongoClient mongoClient(@Qualifier(value = MONGO_CLIENT_FACTORY) @Nonnull ReactiveMongoClientFactory factory, @Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_CLIENT_SETTINGS) @Nonnull MongoClientSettings settings) {
+    public MongoClient mongoClient(@Qualifier(value = CLIENT_FACTORY) @Nonnull ReactiveMongoClientFactory factory,
+        @Qualifier(value = SecondaryMongoAutoConfiguration.CLIENT_SETTINGS) @Nonnull MongoClientSettings settings) {
         return factory.createMongoClient(settings);
     }
 
-    @Bean(name = MONGO_DATABASE_FACTORY)
+    @Bean(name = DATABASE_FACTORY)
     @ConditionalOnBean(name = {MONGO_CLIENT, SecondaryMongoAutoConfiguration.MONGO_PROPERTIES})
-    @ConditionalOnMissingBean(name = MONGO_DATABASE_FACTORY)
-    public SimpleReactiveMongoDatabaseFactory mongoDatabaseFactory(@Qualifier(value = MONGO_CLIENT) @Nonnull MongoClient mongoClient, @Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_PROPERTIES) @Nonnull MongoProperties properties) {
-        return MongoReactiveConfigurationUtils.reactiveMongoDatabaseFactory(mongoClient, properties);
+    @ConditionalOnMissingBean(name = DATABASE_FACTORY)
+    public SimpleReactiveMongoDatabaseFactory mongoDatabaseFactory(@Qualifier(value = MONGO_CLIENT) @Nonnull MongoClient mongoClient,
+        @Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_PROPERTIES) @Nonnull MongoProperties properties) {
+        return MongoReactiveDataConfigurationUtils.reactiveMongoDatabaseFactory(mongoClient, properties);
     }
 
     @Bean(name = MONGO_TEMPLATE)
-    @ConditionalOnBean(name = {MONGO_DATABASE_FACTORY, SecondaryMongoAutoConfiguration.MONGO_MAPPING_CONVERTER})
+    @ConditionalOnBean(name = {DATABASE_FACTORY, SecondaryMongoAutoConfiguration.MAPPING_CONVERTER})
     @ConditionalOnMissingBean(name = MONGO_TEMPLATE)
-    public ReactiveMongoTemplate mongoTemplate(@Qualifier(value = MONGO_DATABASE_FACTORY) @Nonnull ReactiveMongoDatabaseFactory factory, @Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_MAPPING_CONVERTER) @Nonnull MappingMongoConverter converter) {
-        return MongoReactiveConfigurationUtils.reactiveMongoTemplate(factory, converter);
+    public ReactiveMongoTemplate mongoTemplate(@Qualifier(value = SecondaryMongoAutoConfiguration.CONNECTION_DETAILS) @Nonnull MongoConnectionDetails details,
+        @Qualifier(value = DATABASE_FACTORY) @Nonnull ReactiveMongoDatabaseFactory factory,
+        @Qualifier(value = SecondaryMongoAutoConfiguration.MAPPING_CONVERTER) @Nonnull MappingMongoConverter converter) {
+        return MongoReactiveDataConfigurationUtils.reactiveMongoTemplate(details, factory, converter);
     }
 
     @Bean(name = GRID_FS_TEMPLATE)
-    @ConditionalOnBean(name = {MONGO_DATABASE_FACTORY, SecondaryMongoAutoConfiguration.MONGO_MAPPING_CONVERTER, MongoReactivePreConfiguration.DATA_BUFFER_FACTORY, SecondaryMongoAutoConfiguration.MONGO_PROPERTIES})
+    @ConditionalOnBean(name = {DATABASE_FACTORY, SecondaryMongoAutoConfiguration.MAPPING_CONVERTER, MongoReactivePreConfiguration.DATA_BUFFER_FACTORY, SecondaryMongoAutoConfiguration.MONGO_PROPERTIES})
     @ConditionalOnMissingBean(name = GRID_FS_TEMPLATE)
-    public ReactiveGridFsTemplate mongoGridFsTemplate(@Qualifier(value = MONGO_DATABASE_FACTORY) @Nonnull ReactiveMongoDatabaseFactory databaseFactory, @Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_MAPPING_CONVERTER) @Nonnull MappingMongoConverter converter, @Qualifier(value = MongoReactivePreConfiguration.DATA_BUFFER_FACTORY) @Nonnull DataBufferFactory bufferFactory, @Qualifier(value = SecondaryMongoAutoConfiguration.MONGO_PROPERTIES) @Nonnull MongoProperties properties) {
-        return MongoReactiveConfigurationUtils.reactiveGridFsTemplate(databaseFactory, converter, bufferFactory, properties);
+    public ReactiveGridFsTemplate mongoGridFsTemplate(@Qualifier(value = SecondaryMongoAutoConfiguration.CONNECTION_DETAILS) @Nonnull MongoConnectionDetails details,
+        @Qualifier(value = DATABASE_FACTORY) @Nonnull ReactiveMongoDatabaseFactory databaseFactory,
+        @Qualifier(value = SecondaryMongoAutoConfiguration.MAPPING_CONVERTER) @Nonnull MappingMongoConverter converter,
+        @Qualifier(value = MongoReactivePreConfiguration.DATA_BUFFER_FACTORY) @Nonnull DataBufferFactory bufferFactory) {
+        return MongoReactiveDataConfigurationUtils.reactiveGridFsTemplate(details, databaseFactory, converter, bufferFactory);
     }
 }

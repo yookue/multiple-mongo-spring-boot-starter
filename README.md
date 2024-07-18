@@ -42,7 +42,7 @@ spring:
 
 | Bean Type               | Qualifier                                          |
 |-------------------------|----------------------------------------------------|
-| MongoClientFactory      | PrimaryMongoAutoConfiguration.MONGO_CLIENT_FACTORY |
+| MongoClientFactory      | PrimaryMongoAutoConfiguration.CLIENT_FACTORY       |
 | MongoClient             | PrimaryMongoAutoConfiguration.MONGO_CLIENT         |
 | MongoTransactionManager | PrimaryMongoAutoConfiguration.TRANSACTION_MANAGER  |
 | MongoTemplate           | PrimaryMongoAutoConfiguration.MONGO_TEMPLATE       |
@@ -57,7 +57,7 @@ spring:
 
 ## Requirement
 
-- jdk 1.8+
+- jdk 17+
 
 ## License
 
