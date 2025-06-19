@@ -23,6 +23,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.boot.autoconfigure.mongo.MongoConfigurationUtils;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.buffer.DataBufferFactory;
 import org.springframework.data.mongodb.ReactiveMongoDatabaseFactory;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
@@ -43,12 +44,12 @@ import com.mongodb.reactivestreams.client.MongoClient;
 public abstract class MongoReactiveDataConfigurationUtils {
     @Nonnull
     public static SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(@Nonnull MongoClient client, @Nonnull MongoProperties properties) {
-        return reactiveMongoDatabaseFactory(client, properties, null);
+        return reactiveMongoDatabaseFactory(client, properties, null, null);
     }
 
     @Nonnull
-    public static SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(@Nonnull MongoClient client, @Nonnull MongoProperties properties, @Nullable MongoConnectionDetails details) {
-        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, MongoConfigurationUtils.mongoConnectionDetails(properties));
+    public static SimpleReactiveMongoDatabaseFactory reactiveMongoDatabaseFactory(@Nonnull MongoClient client, @Nonnull MongoProperties properties, @Nullable MongoConnectionDetails details, @Nullable SslBundles bundles) {
+        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, MongoConfigurationUtils.mongoConnectionDetails(properties, bundles));
         return new MongoReactiveDataAutoConfiguration(alias).reactiveMongoDatabaseFactory(client, properties);
     }
 

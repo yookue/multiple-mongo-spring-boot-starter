@@ -24,6 +24,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.mongo.MongoConfigurationUtils;
 import org.springframework.boot.autoconfigure.mongo.MongoConnectionDetails;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoManagedTypes;
@@ -63,8 +64,8 @@ public abstract class MongoDataConfigurationUtils {
     }
 
     @Nonnull
-    public static MongoDatabaseFactorySupport<?> mongoDatabaseFactory(@Nonnull MongoClient client, @Nonnull MongoProperties properties, @Nullable MongoConnectionDetails details) {
-        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, MongoConfigurationUtils.mongoConnectionDetails(properties));
+    public static MongoDatabaseFactorySupport<?> mongoDatabaseFactory(@Nonnull MongoClient client, @Nonnull MongoProperties properties, @Nullable MongoConnectionDetails details, @Nullable SslBundles bundles) {
+        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, MongoConfigurationUtils.mongoConnectionDetails(properties, bundles));
         return new MongoDatabaseFactoryConfiguration().mongoDatabaseFactory(client, properties, alias);
     }
 
@@ -75,8 +76,8 @@ public abstract class MongoDataConfigurationUtils {
     }
 
     @Nonnull
-    public static GridFsTemplate gridFsTemplate(@Nonnull MongoProperties properties, @Nonnull MongoDatabaseFactory factory, @Nonnull MongoTemplate template, @Nullable MongoConnectionDetails details) {
-        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, MongoConfigurationUtils.mongoConnectionDetails(properties));
+    public static GridFsTemplate gridFsTemplate(@Nonnull MongoProperties properties, @Nonnull MongoDatabaseFactory factory, @Nonnull MongoTemplate template, @Nullable MongoConnectionDetails details, @Nullable SslBundles bundles) {
+        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, MongoConfigurationUtils.mongoConnectionDetails(properties, bundles));
         return new MongoDatabaseFactoryDependentConfiguration().gridFsTemplate(properties, factory, template, alias);
     }
 }

@@ -103,8 +103,8 @@ public class TertiaryMongoAutoConfiguration {
     @Bean(name = CONNECTION_DETAILS)
     @ConditionalOnBean(name = MONGO_PROPERTIES)
     @ConditionalOnMissingBean(name = CONNECTION_DETAILS)
-    public MongoConnectionDetails mongoConnectionDetails(@Qualifier(value = MONGO_PROPERTIES) @Nonnull MongoProperties properties) {
-        return MongoConfigurationUtils.mongoConnectionDetails(properties);
+    public MongoConnectionDetails mongoConnectionDetails(@Qualifier(value = MONGO_PROPERTIES) @Nonnull MongoProperties properties, @Autowired(required = false) @Qualifier(value = SSL_BUNDLES) @Nonnull SslBundles bundles) {
+        return MongoConfigurationUtils.mongoConnectionDetails(properties, bundles);
     }
 
     @Bean(name = SETTINGS_BUILDER_CUSTOMIZER)
@@ -143,8 +143,9 @@ public class TertiaryMongoAutoConfiguration {
     @ConditionalOnMissingBean(name = DATABASE_FACTORY)
     public MongoDatabaseFactorySupport<?> mongoDatabaseFactory(@Qualifier(value = MONGO_CLIENT) @Nonnull MongoClient client,
         @Qualifier(value = MONGO_PROPERTIES) @Nonnull MongoProperties properties,
-        @Qualifier(value = CONNECTION_DETAILS) @Nonnull MongoConnectionDetails details) {
-        return MongoDataConfigurationUtils.mongoDatabaseFactory(client, properties, details);
+        @Qualifier(value = CONNECTION_DETAILS) @Nonnull MongoConnectionDetails details,
+        @Autowired(required = false) @Qualifier(value = SSL_BUNDLES) @Nonnull SslBundles bundles) {
+        return MongoDataConfigurationUtils.mongoDatabaseFactory(client, properties, details, bundles);
     }
 
     @Bean(name = TRANSACTION_MANAGER)
@@ -199,7 +200,8 @@ public class TertiaryMongoAutoConfiguration {
     public GridFsTemplate mongoGridFsTemplate(@Qualifier(value = MONGO_PROPERTIES) @Nonnull MongoProperties properties,
         @Qualifier(value = DATABASE_FACTORY) @Nonnull MongoDatabaseFactory factory,
         @Qualifier(value = MONGO_TEMPLATE) @Nonnull MongoTemplate template,
-        @Qualifier(value = CONNECTION_DETAILS) @Nonnull MongoConnectionDetails details) {
-        return MongoDataConfigurationUtils.gridFsTemplate(properties, factory, template, details);
+        @Qualifier(value = CONNECTION_DETAILS) @Nonnull MongoConnectionDetails details,
+        @Autowired(required = false) @Qualifier(value = SSL_BUNDLES) @Nonnull SslBundles bundles) {
+        return MongoDataConfigurationUtils.gridFsTemplate(properties, factory, template, details, bundles);
     }
 }

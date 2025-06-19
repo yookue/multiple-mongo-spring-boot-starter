@@ -22,7 +22,6 @@ import jakarta.annotation.Nullable;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.boot.ssl.SslBundles;
 import com.mongodb.MongoClientSettings;
-import com.yookue.commonplexus.springutil.support.SingletonObjectProvider;
 
 
 /**
@@ -34,8 +33,8 @@ import com.yookue.commonplexus.springutil.support.SingletonObjectProvider;
 @SuppressWarnings({"unused", "BooleanMethodIsAlwaysInverted", "UnusedReturnValue"})
 public abstract class MongoConfigurationUtils {
     @Nonnull
-    public static MongoConnectionDetails mongoConnectionDetails(@Nonnull MongoProperties properties) {
-        return new PropertiesMongoConnectionDetails(properties);
+    public static MongoConnectionDetails mongoConnectionDetails(@Nonnull MongoProperties properties, @Nullable SslBundles bundles) {
+        return new PropertiesMongoConnectionDetails(properties, bundles);
     }
 
     @Nonnull
@@ -49,7 +48,7 @@ public abstract class MongoConfigurationUtils {
 
     @Nonnull
     public static MongoClientSettingsBuilderCustomizer mongoClientSettingsCustomizer(@Nonnull MongoProperties properties, @Nullable MongoConnectionDetails details, @Nullable SslBundles bundles) {
-        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, mongoConnectionDetails(properties));
-        return new MongoAutoConfiguration.MongoClientSettingsConfiguration().standardMongoSettingsCustomizer(properties, details, SingletonObjectProvider.ofNullable(bundles));
+        MongoConnectionDetails alias = ObjectUtils.defaultIfNull(details, mongoConnectionDetails(properties, bundles));
+        return new MongoAutoConfiguration.MongoClientSettingsConfiguration().standardMongoSettingsCustomizer(properties, details);
     }
 }
