@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Yookue Ltd. All rights reserved.
+ * Copyright (c) 2020 Unikue Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.yookue.springstarter.multiplemongodb.config;
+package cn.unikue.springstarter.multiplemongodb.config;
 
 
 import java.util.Collections;
@@ -44,6 +44,7 @@ import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoManagedTypes;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -57,43 +58,48 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.TransactionOptions;
 import com.mongodb.client.MongoClient;
-import com.yookue.commonplexus.springcondition.annotation.ConditionalOnAnyProperties;
-import com.yookue.springstarter.multiplemongodb.property.ExtendedMongoProperties;
+import cn.unikue.commonplexus.springcondition.annotation.ConditionalOnAnyProperties;
+import cn.unikue.springstarter.multiplemongodb.property.ExtendedMongoProperties;
 
 
 /**
- * Tertiary configuration for classic mongo
+ * Primary configuration for classic mongo
  *
  * @author David Hsing
+ * @see org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration
+ * @see org.springframework.data.mongodb.config.AbstractMongoClientConfiguration
+ * @see org.springframework.data.mongodb.core.convert.MappingMongoConverter
+ * @see org.springframework.data.mongodb.config.BeanNames
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnBooleanProperty(prefix = "spring.multiple-mongo", name = "enabled", matchIfMissing = true)
 @ConditionalOnAnyProperties(value = {
-    @ConditionalOnProperty(prefix = TertiaryMongoAutoConfiguration.PROPERTIES_PREFIX, name = "uri"),
-    @ConditionalOnProperty(prefix = TertiaryMongoAutoConfiguration.PROPERTIES_PREFIX, name = "host")
+    @ConditionalOnProperty(prefix = PrimaryMongoAutoConfiguration.PROPERTIES_PREFIX, name = "uri"),
+    @ConditionalOnProperty(prefix = PrimaryMongoAutoConfiguration.PROPERTIES_PREFIX, name = "host")
 })
 @ConditionalOnClass(value = MongoClient.class)
-@AutoConfigureAfter(value = SecondaryMongoAutoConfiguration.class)
+@AutoConfigureAfter(value = MongoReactivePreConfiguration.class)
 @AutoConfigureBefore(value = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class, MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class})
-public class TertiaryMongoAutoConfiguration {
-    public static final String PROPERTIES_PREFIX = "spring.multiple-mongo.tertiary";    // $NON-NLS-1$
-    public static final String MONGO_PROPERTIES = "tertiaryMongoProperties";    // $NON-NLS-1$
-    public static final String CONNECTION_DETAILS = "tertiaryMongoConnectionDetails";    // $NON-NLS-1$
-    public static final String SSL_BUNDLES = "tertiaryMongoSslBundles";    // $NON-NLS-1$
-    public static final String SETTINGS_BUILDER_CUSTOMIZER = "tertiaryMongoClientSettingsBuilderCustomizer";    // $NON-NLS-1$
-    public static final String CLIENT_FACTORY = "tertiaryMongoClientFactory";    // $NON-NLS-1$
-    public static final String CLIENT_SETTINGS = "tertiaryMongoClientSettings";    // $NON-NLS-1$
-    public static final String MONGO_CLIENT = "tertiaryMongoClient";    // $NON-NLS-1$
-    public static final String DATABASE_FACTORY = "tertiaryMongoDatabaseFactory";    // $NON-NLS-1$
-    public static final String TRANSACTION_MANAGER = "tertiaryMongoTransactionManager";    // $NON-NLS-1$
-    public static final String TRANSACTION_OPTIONS = "tertiaryMongoTransactionOptions";    // $NON-NLS-1$
-    public static final String CUSTOM_CONVERSIONS = "tertiaryMongoCustomConversions";    // $NON-NLS-1$
-    public static final String MANAGED_TYPES = "tertiaryMongoManagedTypes";    // $NON-NLS-1$
-    public static final String MAPPING_CONTEXT = "tertiaryMongoMappingContext";    // $NON-NLS-1$
-    public static final String MAPPING_CONVERTER = "tertiaryMongoMappingConverter";    // $NON-NLS-1$
-    public static final String MONGO_TEMPLATE = "tertiaryMongoTemplate";    // $NON-NLS-1$
-    public static final String GRID_FS_TEMPLATE = "tertiaryMongoGridFsTemplate";    // $NON-NLS-1$
+public class PrimaryMongoAutoConfiguration {
+    public static final String PROPERTIES_PREFIX = "spring.multiple-mongo.primary";    // $NON-NLS-1$
+    public static final String MONGO_PROPERTIES = "primaryMongoProperties";    // $NON-NLS-1$
+    public static final String CONNECTION_DETAILS = "primaryMongoConnectionDetails";    // $NON-NLS-1$
+    public static final String SSL_BUNDLES = "primaryMongoSslBundles";    // $NON-NLS-1$
+    public static final String SETTINGS_BUILDER_CUSTOMIZER = "primaryMongoClientSettingsBuilderCustomizer";    // $NON-NLS-1$
+    public static final String CLIENT_FACTORY = "primaryMongoClientFactory";    // $NON-NLS-1$
+    public static final String CLIENT_SETTINGS = "primaryMongoClientSettings";    // $NON-NLS-1$
+    public static final String MONGO_CLIENT = "primaryMongoClient";    // $NON-NLS-1$
+    public static final String DATABASE_FACTORY = "primaryMongoDatabaseFactory";    // $NON-NLS-1$
+    public static final String TRANSACTION_MANAGER = "primaryMongoTransactionManager";    // $NON-NLS-1$
+    public static final String TRANSACTION_OPTIONS = "primaryMongoTransactionOptions";    // $NON-NLS-1$
+    public static final String CUSTOM_CONVERSIONS = "primaryMongoCustomConversions";    // $NON-NLS-1$
+    public static final String MANAGED_TYPES = "primaryMongoManagedTypes";    // $NON-NLS-1$
+    public static final String MAPPING_CONTEXT = "primaryMongoMappingContext";    // $NON-NLS-1$
+    public static final String MAPPING_CONVERTER = "primaryMongoMappingConverter";    // $NON-NLS-1$
+    public static final String MONGO_TEMPLATE = "primaryMongoTemplate";    // $NON-NLS-1$
+    public static final String GRID_FS_TEMPLATE = "primaryMongoGridFsTemplate";    // $NON-NLS-1$
 
+    @Primary
     @Bean(name = MONGO_PROPERTIES)
     @ConditionalOnMissingBean(name = MONGO_PROPERTIES)
     @ConfigurationProperties(prefix = PROPERTIES_PREFIX)
@@ -101,6 +107,7 @@ public class TertiaryMongoAutoConfiguration {
         return new ExtendedMongoProperties();
     }
 
+    @Primary
     @Bean(name = CONNECTION_DETAILS)
     @ConditionalOnBean(name = MONGO_PROPERTIES)
     @ConditionalOnMissingBean(name = CONNECTION_DETAILS)
@@ -108,6 +115,7 @@ public class TertiaryMongoAutoConfiguration {
         return MongoConfigurationUtils.mongoConnectionDetails(properties, bundles);
     }
 
+    @Primary
     @Bean(name = SETTINGS_BUILDER_CUSTOMIZER)
     @ConditionalOnBean(name = MONGO_PROPERTIES)
     @ConditionalOnMissingBean(name = SETTINGS_BUILDER_CUSTOMIZER)
@@ -117,6 +125,7 @@ public class TertiaryMongoAutoConfiguration {
         return MongoConfigurationUtils.mongoClientSettingsCustomizer(properties, details, bundles);
     }
 
+    @Primary
     @Bean(name = CLIENT_FACTORY)
     @ConditionalOnBean(name = SETTINGS_BUILDER_CUSTOMIZER)
     @ConditionalOnMissingBean(name = CLIENT_FACTORY)
@@ -124,6 +133,7 @@ public class TertiaryMongoAutoConfiguration {
         return new MongoClientFactory(Collections.singletonList(customizer));
     }
 
+    @Primary
     @Bean(name = CLIENT_SETTINGS)
     @ConditionalOnBean(name = SETTINGS_BUILDER_CUSTOMIZER)
     @ConditionalOnMissingBean(name = CLIENT_SETTINGS)
@@ -131,6 +141,7 @@ public class TertiaryMongoAutoConfiguration {
         return MongoConfigurationUtils.mongoClientSettings(customizer);
     }
 
+    @Primary
     @Bean(name = MONGO_CLIENT, destroyMethod = "close")
     @ConditionalOnBean(name = {CLIENT_FACTORY, CLIENT_SETTINGS})
     @ConditionalOnMissingBean(name = MONGO_CLIENT)
@@ -139,6 +150,7 @@ public class TertiaryMongoAutoConfiguration {
         return factory.createMongoClient(settings);
     }
 
+    @Primary
     @Bean(name = DATABASE_FACTORY)
     @ConditionalOnBean(name = {MONGO_CLIENT, MONGO_PROPERTIES})
     @ConditionalOnMissingBean(name = DATABASE_FACTORY)
@@ -149,6 +161,7 @@ public class TertiaryMongoAutoConfiguration {
         return MongoDataConfigurationUtils.mongoDatabaseFactory(client, properties, details, bundles);
     }
 
+    @Primary
     @Bean(name = TRANSACTION_MANAGER)
     @ConditionalOnBean(name = DATABASE_FACTORY)
     @ConditionalOnMissingBean(name = TRANSACTION_MANAGER)
@@ -157,18 +170,21 @@ public class TertiaryMongoAutoConfiguration {
         return new MongoTransactionManager(factory, options);
     }
 
+    @Primary
     @Bean(name = CUSTOM_CONVERSIONS)
     @ConditionalOnMissingBean(name = CUSTOM_CONVERSIONS)
     public MongoCustomConversions mongoCustomConversions() {
         return MongoDataConfigurationUtils.mongoCustomConversions();
     }
 
+    @Primary
     @Bean(name = MANAGED_TYPES)
     @ConditionalOnMissingBean(name = MANAGED_TYPES)
     public MongoManagedTypes mongoManagedTypes(@Nonnull ApplicationContext context) throws ClassNotFoundException {
         return MongoDataConfigurationUtils.mongoManagedTypes(context);
     }
 
+    @Primary
     @Bean(name = MAPPING_CONTEXT)
     @ConditionalOnBean(name = {CUSTOM_CONVERSIONS, MONGO_PROPERTIES})
     @ConditionalOnMissingBean(name = MAPPING_CONTEXT)
@@ -178,6 +194,7 @@ public class TertiaryMongoAutoConfiguration {
         return MongoDataConfigurationUtils.mongoMappingContext(properties, conversions, types);
     }
 
+    @Primary
     @Bean(name = MAPPING_CONVERTER)
     @ConditionalOnBean(name = {DATABASE_FACTORY, MAPPING_CONTEXT, CUSTOM_CONVERSIONS, MONGO_PROPERTIES})
     @ConditionalOnMissingBean(name = MAPPING_CONVERTER)
@@ -187,6 +204,7 @@ public class TertiaryMongoAutoConfiguration {
         return MongoDataConfigurationUtils.mappingMongoConverter(factory, context, conversions);
     }
 
+    @Primary
     @Bean(name = MONGO_TEMPLATE)
     @ConditionalOnBean(name = {DATABASE_FACTORY, MAPPING_CONVERTER})
     @ConditionalOnMissingBean(name = MONGO_TEMPLATE)
@@ -195,6 +213,7 @@ public class TertiaryMongoAutoConfiguration {
         return new MongoTemplate(factory, converter);
     }
 
+    @Primary
     @Bean(name = GRID_FS_TEMPLATE)
     @ConditionalOnBean(name = {DATABASE_FACTORY, MONGO_TEMPLATE, MONGO_PROPERTIES})
     @ConditionalOnMissingBean(name = GRID_FS_TEMPLATE)

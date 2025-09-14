@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Yookue Ltd. All rights reserved.
+ * Copyright (c) 2020 Unikue Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.yookue.springstarter.multiplemongodb.config;
+package cn.unikue.springstarter.multiplemongodb.config;
 
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -30,8 +30,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 import org.springframework.stereotype.Repository;
 import com.mongodb.client.MongoClient;
-import com.yookue.commonplexus.springcondition.annotation.ConditionalOnAllBooleanProperties;
-import com.yookue.commonplexus.springcondition.annotation.ConditionalOnAnnotation;
+import cn.unikue.commonplexus.springcondition.annotation.ConditionalOnAllBooleanProperties;
+import cn.unikue.commonplexus.springcondition.annotation.ConditionalOnAnnotation;
 
 
 /**

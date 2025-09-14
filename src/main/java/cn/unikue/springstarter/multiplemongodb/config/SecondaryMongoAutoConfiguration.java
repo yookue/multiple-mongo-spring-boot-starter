@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020 Yookue Ltd. All rights reserved.
+ * Copyright (c) 2020 Unikue Ltd. All rights reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.yookue.springstarter.multiplemongodb.config;
+package cn.unikue.springstarter.multiplemongodb.config;
 
 
 import java.util.Collections;
@@ -57,8 +57,8 @@ import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.TransactionOptions;
 import com.mongodb.client.MongoClient;
-import com.yookue.commonplexus.springcondition.annotation.ConditionalOnAnyProperties;
-import com.yookue.springstarter.multiplemongodb.property.ExtendedMongoProperties;
+import cn.unikue.commonplexus.springcondition.annotation.ConditionalOnAnyProperties;
+import cn.unikue.springstarter.multiplemongodb.property.ExtendedMongoProperties;
 
 
 /**
